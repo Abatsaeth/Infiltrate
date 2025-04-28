@@ -1,0 +1,150 @@
+1. High-Level Overview
+You are to generate a complete, production-ready Python desktop application called Infiltrate. Its primary goals are to be minimalistic, modern, fast, bug- and error-free, and to feature smooth animations and clean UI.
+
+2. Technology Stack
+
+GUI framework: PyQt5 (or PySide6) for native desktop performance and advanced animation support.
+
+Python version: 3.10+.
+
+Folder structure:
+
+css
+Copy
+Edit
+Infiltrate/
+├─ Content/
+│  ├─ Images/
+│  │  ├─ Home.png
+│  │  ├─ Picture.png
+│  │  ├─ AddImage.png
+│  │  └─ Settings.png
+│  └─ Fonts/
+│     ├─ centurygothic.ttf
+│     └─ centurygothic_bold.ttf
+└─ Scripts/
+   ├─ main.py
+   ├─ ImageConverter.py
+   ├─ Updater.py
+   └─ Infiltrate.py  # app launcher
+3. Application Shell (Infiltrate.py)
+
+Bootstraps the QApplication and shows the main window.
+
+Ensures a single‐instance lock (no duplicates).
+
+Sets the global stylesheet for theme colors.
+
+4. Main Window (main.py)
+
+Window chrome: Custom frameless window with black background, red accent, white text.
+
+Controls:
+
+Custom Minimize and Close buttons in the top‐right corner, with hover and click animations.
+
+Always‐on‐top toggle (optional).
+
+Tabs (QTabWidget or equivalent):
+
+Home
+
+Icon: Content/Images/Home.png (scaled to 24×24).
+
+Content:
+
+Smoothly animated “Infiltrate” logo text (fade/slide).
+
+Underneath, a dynamically generated status table listing all required dependencies (name, installed version, latest version, update needed?).
+
+“Check for updates” button that invokes Updater.py.
+
+Image Converter
+
+Icon: Content/Images/Picture.png (scaled).
+
+Content:
+
+Centered AddImage.png, slightly darkened (opacity ~0.6).
+
+Below, a QLabel: “Paste, Drag-and-Drop, or Select the image you would like to convert.” (darkened text).
+
+Supports clipboard paste, file dialog, drag-and-drop.
+
+Once an image is selected, calls ImageConverter.py logic to display a modal, themed conversion dialog.
+
+Settings
+
+Icon: Content/Images/Settings.png.
+
+Content:
+
+Toggles for theme (dark/light), animation speed, default output folder.
+
+Button: “Reset to defaults.”
+
+Fonts: Load centurygothic.ttf and centurygothic_bold.ttf from Content/Fonts, apply globally (e.g. QFontDatabase).
+
+Animations:
+
+Use Qt’s QPropertyAnimation for button hover, tab transitions (sliding/fading), and the home‐page logo.
+
+Ensure all animations are hardware-accelerated and non-blocking.
+
+Performance & Stability:
+
+Run long tasks (conversion, updates) in separate threads or via QThreadPool + QRunnable.
+
+Provide progress callbacks and allow cancellation.
+
+Catch exceptions, log to a rotating file logger, and display user-friendly error dialogs.
+
+Minimize widget redraws; use update() judiciously.
+
+5. ImageConverter Module (Scripts/ImageConverter.py)
+
+Expose a function convert_image(input_path: str, output_format: str, output_path: str) -> None.
+
+Support conversion between all common formats (PNG, JPG, BMP, TIFF, GIF, WebP, etc.) via Pillow.
+
+Open a themed modal QDialog with:
+
+Drop-down for target format.
+
+File selector for output path.
+
+Cancel and Convert buttons.
+
+Real-time progress bar (if format supports streaming).
+
+Return success/failure to caller (signals or callbacks).
+
+6. Updater Module (Scripts/Updater.py)
+
+Runs in a non-focusable, always-on-top small window (no minimize/close chrome).
+
+Shows a QTextEdit or QLabel that logs each step (e.g., “Checking repository…”, “Downloading update…”).
+
+Two themed buttons: Pause (toggle), Cancel.
+
+Pins to top of parent window; non-modal.
+
+Uses requests or aiohttp for network calls; verify SSL.
+
+7. Code Quality & Testing
+
+Follow PEP8/flake8 style.
+
+Include unit tests for ImageConverter.py and Updater.py (pytest).
+
+Continuous integration: lint → tests → build.
+
+Use type hints and mypy.
+
+8. Build & Distribution
+
+Use PyInstaller spec to bundle into a single executable per platform.
+
+Ensure external assets (images, fonts) are included.
+
+Auto-update mechanism (optional) via a manifest JSON.
